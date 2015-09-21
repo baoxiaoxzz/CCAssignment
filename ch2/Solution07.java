@@ -1,59 +1,48 @@
 
 public class Solution07 {
-	//define a class to store the result
-	class Result{
-		public boolean isLoop;//whether is loop
-		public Node startLoop;//the collisionspot of loop
-		public Result(){
-		}
-		public Result(Node startLoop,boolean isLoop){
-			this.isLoop=isLoop;
-			this.startLoop=startLoop;
-		}
-	}
-
 	public static void main(String[] args) {
 		LinkedList list1 = new LinkedList();
 		LinkedList list2 = new LinkedList();
 		init(list1,list2);//Initialize the list
+	    list1.print();
+	    list2.print();
+		System.out.println("list1 and list2 are intersection :" + isIntersection(list1,list2));
 		
-	//	System.out.print("list1 : ");
-	//	list1.print();
-		System.out.println("list1 is loop :" + isLoop(list1).isLoop);
-		if(isLoop(list1).isLoop){
-			System.out.println("The collisionspot is" + isLoop(list1).startLoop.getData());
-		}
-	//	System.out.print("list2 : ");
-	//	list2.print();
-		System.out.println("list2 is loop :" + isLoop(list2).isLoop);
-		if(isLoop(list2).isLoop){
-			System.out.println("The start point of loop is :" + isLoop(list2).startLoop.getData());
-		}
+	}
+	
+	private static boolean isIntersection(LinkedList list1,LinkedList list2){
+		if(list1.getFirst()==null || list2.getFirst()==null) return false;
+		 Node rear1=list1.getLast();
+		 Node rear2=list2.getLast();
+		 int size1=list1.getSize();
+		 int size2=list2.getSize();
+		 if(rear1!=rear2) {
+			 return false;//if the last nodes are different,then there is no intersection
+		 }
+		 //Node point to the head of the node
+		  Node  shortNode =size1<size2?list1.getFirst():list2.getFirst();
+		  Node longNode =size1<size2?list2.getFirst():list1.getFirst();
+		  //move the pointer of longer list to make two lists have same node to compare
+		  longNode=getKthNode(longNode,Math.abs(size2-size1));
+		  
+		  while(shortNode!=longNode){//judge if nodes are the same
+			  shortNode=shortNode.getNext();
+			  longNode=longNode.getNext();
+		  }
+		  
+		  if(shortNode==null){//if shortNode = null when break while loop,then there is no intersection
+			  return false;
+		  }
+		  return true;
 	}
 
-	private static Result isLoop(LinkedList list1) {
-		Node slow=list1.getFirst();//slow takes k steps each time
-		Node fast=list1.getFirst();//first takes 2k steps each time
-		//the collision point is the size of loop - k steps before the start point of the loop
-		while(fast!=null && fast.getNext()!=null){
-			slow=slow.getNext();
-			fast=fast.getNext().getNext();
-			if(slow==fast){//find the meeting point
-				break;
-			}
+	private static Node getKthNode(Node first, int n) {
+		Node cur=first;
+		while(n>0 && cur!=null){
+			cur=cur.getNext();
+			n--;
 		}
-		
-		if(fast==null ||fast.getNext()==null){//there is no loop
-			return new Solution07().new Result(slow,false);
-		}
-		/*move fast to head of the link,slow still point to the meeting point.slow and fast are both k steps away
-		 *from the start of the loop.Move them together at the same pace,then they will meet at the start of the loop*/
-		fast=list1.getFirst();
-		while(fast!=slow){
-			slow=slow.getNext();
-			fast=fast.getNext();
-		}	
-		return new Solution07().new Result(slow, true);
+		return cur;
 	}
 
 	private static void init(LinkedList list1,LinkedList list2) {
@@ -68,11 +57,14 @@ public class Solution07 {
         list2.add(new Node(5));
         list2.add(new Node(9));
         list2.add(new Node(2));
-        list2.add(new Node(3));//the meeting point
+        list2.add(new Node(3));
         list2.add(new Node(2));
         list2.add(new Node(9));
         list2.add(new Node(5));
-        list2.getFirst().getNext().getNext().getNext().getNext().getNext().getNext().setNext( list2.getFirst().getNext().getNext().getNext());
+        list2.add(list1.getFirst().getNext().getNext().getNext());
+        list2.add(list1.getFirst().getNext().getNext().getNext().getNext());
+        list2.add(list1.getFirst().getNext().getNext().getNext().getNext().getNext());
+        list2.add(list1.getFirst().getNext().getNext().getNext().getNext().getNext().getNext());
 	}
 
 }
